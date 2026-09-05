@@ -1,128 +1,45 @@
-const nav = document.querySelector('.nav');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const menu = document.querySelector('.menu-button');
 const links = document.querySelector('.nav-links');
-
-addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 20), { passive: true });
-menu.addEventListener('click', () => {
-  const open = links.classList.toggle('open');
-  menu.setAttribute('aria-expanded', String(open));
-});
-links.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-  links.classList.remove('open');
-  menu.setAttribute('aria-expanded', 'false');
-}));
-
-const revealObserver = new IntersectionObserver((entries) => entries.forEach((entry) => {
-  if (entry.isIntersecting) {
-    entry.target.classList.add('visible');
-    revealObserver.unobserve(entry.target);
-  }
-}), { threshold: 0.08 });
-document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
-
-const collections = [...document.querySelectorAll('[data-carousel]')];
-function setCurrentCollection(activeSection) {
-  collections.forEach((section) => {
-    const active = section === activeSection;
-    section.classList.toggle('is-current', active);
-    section.querySelector('.carousel').tabIndex = active ? 0 : -1;
-    section.toggleAttribute('aria-current', active);
-  });
+function closeMenu() { links?.classList.remove('open'); menu?.setAttribute('aria-expanded', 'false'); }
+menu?.addEventListener('click', () => { const open = links.classList.toggle('open'); menu.setAttribute('aria-expanded', String(open)); });
+links?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+if ('IntersectionObserver' in window && !reducedMotion.matches) {
+  document.documentElement.classList.add('js-motion');
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: .02 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
-
-let collectionFrame = 0;
-function updateCurrentCollection() {
-  cancelAnimationFrame(collectionFrame);
-  collectionFrame = requestAnimationFrame(() => {
-    const viewportTarget = innerHeight * 0.48;
-    let closest = null;
-    let closestDistance = Infinity;
-    collections.forEach((section) => {
-      const box = section.getBoundingClientRect();
-      if (box.bottom < 80 || box.top > innerHeight) return;
-      const sectionTarget = Math.max(box.top, Math.min(viewportTarget, box.bottom));
-      const distance = Math.abs(sectionTarget - viewportTarget);
-      if (distance < closestDistance) {
-        closest = section;
-        closestDistance = distance;
-      }
-    });
-    if (closest) setCurrentCollection(closest);
-  });
-}
-addEventListener('scroll', updateCurrentCollection, { passive: true });
-addEventListener('resize', updateCurrentCollection, { passive: true });
-
-collections.forEach((section) => {
-  const rail = section.querySelector('.carousel');
-  const slides = [...rail.querySelectorAll('.slide')];
-  const current = section.querySelector('.counter b');
-  const total = section.querySelector('.counter');
-  const bar = section.querySelector('.progress i');
-  let index = 0;
-  total.lastChild.textContent = ` / ${String(slides.length).padStart(2, '0')}`;
-  bar.style.width = `${100 / slides.length}%`;
-
-  function render(nextIndex, shouldScroll = true) {
-    index = (nextIndex + slides.length) % slides.length;
-    slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === index));
-    current.textContent = String(index + 1).padStart(2, '0');
-    bar.style.transform = `translateX(${index * 100}%)`;
-    if (shouldScroll) {
-      const slide = slides[index];
-      const left = slide.offsetLeft - (rail.clientWidth - slide.offsetWidth) / 2;
-      rail.scrollTo({ left, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-    }
-  }
-
-  section.querySelector('[data-prev]').addEventListener('click', () => { setCurrentCollection(section); render(index - 1); });
-  section.querySelector('[data-next]').addEventListener('click', () => { setCurrentCollection(section); render(index + 1); });
-  rail.addEventListener('pointerdown', () => setCurrentCollection(section));
-  rail.addEventListener('focus', () => setCurrentCollection(section));
-  rail.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowRight') { event.preventDefault(); render(index + 1); }
-    if (event.key === 'ArrowLeft') { event.preventDefault(); render(index - 1); }
-  });
-
-  let scrollTimer;
-  rail.addEventListener('scroll', () => {
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => {
-      const center = rail.scrollLeft + rail.clientWidth / 2;
-      let nearest = 0;
-      let distance = Infinity;
-      slides.forEach((slide, slideIndex) => {
-        const delta = Math.abs(slide.offsetLeft + slide.offsetWidth / 2 - center);
-        if (delta < distance) { distance = delta; nearest = slideIndex; }
-      });
-      render(nearest, false);
-    }, 90);
-  }, { passive: true });
+function openDialog(dialog) { closeMenu(); dialog.showModal(); document.body.classList.add('modal-open'); }
+document.querySelectorAll('dialog').forEach(dialog => {
+  dialog.addEventListener('close', () => document.body.classList.remove('modal-open'));
+  dialog.addEventListener('click', event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (dialog.classList.contains('lightbox') || event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
 });
-updateCurrentCollection();
-
-const dialog = document.querySelector('.lightbox');
-const dialogImage = dialog.querySelector('img');
-const caption = dialog.querySelector('p');
-document.querySelectorAll('[data-lightbox]').forEach((button) => button.addEventListener('click', () => {
-  const image = button.querySelector('img');
-  dialogImage.src = image.src;
-  dialogImage.alt = image.alt;
-  caption.textContent = image.alt;
-  dialog.showModal();
-}));
-dialog.querySelector('.close').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
-
-const halo = document.querySelector('.cursor-halo');
-if (matchMedia('(pointer:fine)').matches) {
-  addEventListener('pointermove', (event) => {
-    halo.style.left = `${event.clientX}px`;
-    halo.style.top = `${event.clientY}px`;
-    halo.classList.add('show');
+const lightbox = document.querySelector('.lightbox');
+if (lightbox) {
+  const image = lightbox.querySelector('img');
+  document.querySelectorAll('[data-lightbox]').forEach(button => {
+    const original = button.querySelector('img');
+    button.setAttribute('aria-label', `Ampliar: ${original.alt}`);
+    button.addEventListener('click', () => { image.src = original.src; image.alt = original.alt; openDialog(lightbox); });
   });
-  document.querySelectorAll('a,button').forEach((element) => {
-    element.addEventListener('pointerenter', () => halo.classList.add('active'));
-    element.addEventListener('pointerleave', () => halo.classList.remove('active'));
-  });
+  lightbox.querySelector('.close').addEventListener('click', () => lightbox.close());
+}
+const contact = document.querySelector('.contact-dialog');
+document.querySelectorAll('[data-contact]').forEach(button => button.addEventListener('click', () => openDialog(contact)));
+contact?.querySelector('.contact-close').addEventListener('click', () => contact.close());
+// Fluid floating icons, orbiting geometry, and pointer response on the About page.
+const scene = document.querySelector('.camera-scene');
+if (scene) {
+  const pieces = [...scene.querySelectorAll('.floating-symbol,.scene-ring,.scene-dot')];
+  let raf = 0, visible = true, pointerX = 0, pointerY = 0;
+  scene.addEventListener('pointermove', event => { const r = scene.getBoundingClientRect(); pointerX = (event.clientX - r.left) / r.width - .5; pointerY = (event.clientY - r.top) / r.height - .5; });
+  scene.addEventListener('pointerleave', () => { pointerX = 0; pointerY = 0; });
+  function draw(time) {
+    pieces.forEach((piece, i) => { const t = time / 1800 + i * 1.3; const x = Math.sin(t) * (8 + i) + pointerX * 15; const y = Math.cos(t * .75) * 12 + pointerY * 15; const angle = Math.sin(t * .65) * (i < 4 ? 9 : 25); piece.style.transform = `translate3d(${x}px,${y}px,0) rotate(${angle}deg)`; });
+    raf = requestAnimationFrame(draw);
+  }
+  function sync() { cancelAnimationFrame(raf); if (!reducedMotion.matches && visible && !document.hidden) raf = requestAnimationFrame(draw); else if (reducedMotion.matches) pieces.forEach(p => p.style.transform = ''); }
+  if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }).observe(scene);
+  reducedMotion.addEventListener('change', sync); document.addEventListener('visibilitychange', sync); sync();
 }

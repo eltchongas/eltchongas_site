@@ -10,3 +10,38 @@
 
 /* About: freely floating icons on the white page. */
 .about-theme{background:#fff}.about-theme .camera-scene{background:#fff;border-radius:0;overflow:hidden}.about-theme .camera-main{color:var(--emerald)}.about-theme .camera-small{color:var(--ink)}.about-theme .flash-one{color:var(--emerald)}.about-theme .flash-two{color:#b8ff2c;filter:drop-shadow(0 1px 1px #10181430)}.about-theme .scene-ring{border-color:#087f5b25}.about-theme .ring-two{border-color:#087f5b40}.about-theme .scene-dot{background:var(--neon)}
+
+/* Maestro Santa Rosa: azul-marinho, branco e linhas inspiradas no emblema. */
+.maestro-theme{--paper:#fff;--ink:#102b4d;--muted:#52657c;--emerald:#102b4d;--neon:#e6edf5;--line:#ced8e5;background:#fff;color:var(--ink)}
+.maestro-nav{background:rgba(255,255,255,.96);border-bottom-color:#ced8e5}.maestro-nav .nav-cta{background:#102b4d;color:#fff}
+.maestro-intro{max-width:1060px;margin:auto;padding:4.5rem var(--pad) 2.8rem}.maestro-intro .kicker,.maestro-footer .kicker{font-size:.875rem;line-height:1.5;letter-spacing:.13em}
+.maestro-intro h1{font:400 clamp(2.8rem,6.5vw,5.7rem)/1.06 Georgia,'Times New Roman',serif;letter-spacing:-.045em;margin:1.5rem 0 2rem;max-width:900px}.maestro-intro h1 span{display:block;font:500 1rem/1.5 var(--sans);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.6rem}
+.maestro-summary{border-top:1px solid #102b4d;padding-top:1.2rem;display:flex;justify-content:space-between;gap:1.5rem;align-items:center}.maestro-summary p{margin:0;line-height:1.7;color:var(--muted)}.maestro-summary a{font-size:.875rem;line-height:1.8;text-decoration:none}.maestro-summary strong{font-size:1rem;font-weight:500;overflow-wrap:anywhere}
+.maestro-feed{max-width:940px;margin:0 auto;padding:0 var(--pad) 4rem;display:flex;flex-direction:column;gap:3rem}.maestro-photo{margin:0;min-width:0}.maestro-photo button{display:block;border:0;padding:0;background:#eee;width:100%;cursor:zoom-in}.maestro-photo img{display:block;width:100%;height:auto}.maestro-photo figcaption{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding:1rem 0;color:var(--muted);font-size:.875rem;line-height:1.5}.maestro-photo figcaption span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.maestro-footer{background:#102b4d;color:#fff;padding:3rem var(--pad);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:2rem}.maestro-footer .kicker{color:#dac392}.maestro-contact{font-size:clamp(1rem,3vw,1.6rem);line-height:1.5;text-decoration:none;overflow-wrap:anywhere}.maestro-footer .copyright{width:100%;color:#c8c8c8}.maestro-theme .close{background:#dac392}.maestro-feature{background:#102b4d}.maestro-feature strong{font-family:Georgia,'Times New Roman',serif;font-weight:400;line-height:1.08;font-size:clamp(2rem,4.6vw,4.8rem);letter-spacing:-.04em}.maestro-feature b{color:#dac392}
+@media(min-width:801px) and (max-width:1200px){.nav-inner{gap:.7rem;padding-inline:1.2rem}.nav-links{gap:0}.nav-links a{font-size:.875rem;padding:.6rem;max-width:220px}.logo{font-size:.95rem}.nav-cta{white-space:nowrap}}
+@media(max-width:800px){.maestro-nav .nav-links{background:#fff}.maestro-intro{padding-top:3rem}.maestro-summary{flex-direction:column;align-items:flex-start;gap:1rem}.maestro-feed{gap:2rem}.maestro-photo figcaption{font-size:.875rem}.nav-links a{font-size:1rem}.maestro-footer{align-items:flex-start;flex-direction:column}}
+
+/* Mosaico fluido: mantém o enquadramento integral de cada fotografia. */
+.maestro-intro{max-width:1600px;position:relative;padding-top:3.5rem;padding-bottom:2rem;display:grid;grid-template-columns:140px minmax(0,1fr);column-gap:2.5rem;align-items:center}
+.maestro-emblem{width:140px;height:140px;object-fit:contain;grid-column:1;grid-row:1 / 3}
+.maestro-intro>.kicker{grid-column:2;margin:0 0 .7rem}
+.maestro-intro h1{grid-column:2;font-size:clamp(2.5rem,5.8vw,5.7rem);margin:0 0 1.7rem;max-width:none}
+.maestro-summary{grid-column:1 / -1;justify-content:flex-end;border-top:3px double var(--ink);padding-top:.8rem}
+.maestro-mosaic{max-width:1600px;margin:0 auto;padding:0 var(--pad) 4rem;columns:3;column-gap:clamp(.8rem,1.6vw,1.5rem)}
+.maestro-mosaic .maestro-photo{break-inside:avoid;margin:0 0 clamp(.8rem,1.6vw,1.5rem);position:relative;overflow:hidden;display:inline-block;width:100%;vertical-align:top}
+.maestro-photo button{background:#e6edf5;overflow:hidden}
+.maestro-photo img{width:100%;height:auto;transition:filter .2s ease}
+.maestro-photo button:hover img{filter:brightness(.94)}
+.maestro-photo button:focus-visible{outline:3px solid #102b4d;outline-offset:-3px}
+.maestro-mosaic figcaption{position:absolute;bottom:.65rem;right:.65rem;border:0;border-radius:2px;background:#102b4d;color:white;padding:.35rem .55rem;font-size:.875rem;pointer-events:none}
+.maestro-theme .lightbox{background:rgba(9,25,46,.97)}
+.maestro-theme .lightbox::backdrop{background:#102b4d}
+.maestro-theme .close{background:#e6edf5;color:#102b4d}
+.maestro-footer .kicker,.maestro-feature b{color:#e6edf5}
+.maestro-footer .copyright{color:#c9d6e6}
+.maestro-nav .nav-links a,.maestro-nav .nav-cta{font-size:.875rem}
+@media(max-width:1000px){.maestro-mosaic{columns:2}}
+@media(max-width:800px){.maestro-intro{grid-template-columns:90px minmax(0,1fr);column-gap:1rem;padding-top:2rem}.maestro-emblem{width:90px;height:90px}.maestro-intro h1{font-size:clamp(2rem,6vw,3.5rem);letter-spacing:-.035em}.maestro-intro h1 span{font-size:.875rem;letter-spacing:.08em}.maestro-summary{align-items:flex-end}.maestro-intro>.kicker{font-size:.875rem;letter-spacing:.04em}}
+@media(max-width:480px){.maestro-intro{grid-template-columns:64px minmax(0,1fr);column-gap:.8rem}.maestro-emblem{width:64px;height:64px}.maestro-intro h1{font-size:2rem}.maestro-mosaic{column-gap:.65rem}.maestro-mosaic .maestro-photo{margin-bottom:.65rem}.maestro-mosaic figcaption{font-size:.75rem;right:.3rem;bottom:.3rem;padding:.2rem .35rem}}
+@media(prefers-reduced-motion:reduce){.maestro-photo img{transition:none}}

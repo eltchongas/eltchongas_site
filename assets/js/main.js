@@ -43,3 +43,36 @@ if (scene) {
   if ('IntersectionObserver' in window) new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }).observe(scene);
   reducedMotion.addEventListener('change', sync); document.addEventListener('visibilitychange', sync); sync();
 }
+
+// Best effort only: browsers cannot detect OS-level screenshots universally.
+const copyrightNotice = document.querySelector('.copyright-notice');
+let copyrightReturnFocus = null;
+function showCopyrightNotice() {
+  if (!copyrightNotice || document.body.classList.contains('copyright-active')) return;
+  copyrightReturnFocus = document.activeElement;
+  document.querySelectorAll('dialog[open]').forEach(dialog => dialog.close());
+  document.body.classList.add('copyright-active');
+  copyrightNotice.setAttribute('role', 'dialog');
+  copyrightNotice.setAttribute('aria-modal', 'true');
+  [...document.body.children].forEach(el => { if (el !== copyrightNotice && !el.inert) { el.inert = true; el.dataset.copyrightInert = 'true'; } });
+  copyrightNotice.querySelector('.copyright-whatsapp').focus();
+}
+function hideCopyrightNotice() {
+  document.body.classList.remove('copyright-active');
+  document.querySelectorAll('[data-copyright-inert]').forEach(el => { el.inert = false; delete el.dataset.copyrightInert; });
+  copyrightNotice?.removeAttribute('aria-modal');
+  copyrightReturnFocus?.focus();
+}
+copyrightNotice?.querySelector('.copyright-dismiss').addEventListener('click', hideCopyrightNotice);
+document.addEventListener('keydown', event => {
+  const key = (event.key || '').toLowerCase();
+  if (key === 'escape' && document.body.classList.contains('copyright-active')) { hideCopyrightNotice(); return; }
+  if ((event.key === 'PrintScreen' || event.code === 'PrintScreen' || event.keyCode === 44) || ((event.ctrlKey || event.metaKey) && key === 'p') || (event.metaKey && event.shiftKey && ['3','4','5'].includes(key)) || (event.metaKey && event.shiftKey && key === 's')) {
+    event.preventDefault(); showCopyrightNotice();
+  }
+});
+document.addEventListener('keyup', event => { if ((event.key === 'PrintScreen' || event.code === 'PrintScreen' || event.keyCode === 44)) showCopyrightNotice(); });
+document.addEventListener('contextmenu', event => { if (event.target.closest('img, [data-lightbox], .maestro-hero')) { event.preventDefault(); showCopyrightNotice(); } });
+document.addEventListener('dragstart', event => { if (event.target.tagName === 'IMG') event.preventDefault(); });
+window.addEventListener('beforeprint', showCopyrightNotice);
+window.addEventListener('afterprint', hideCopyrightNotice);
